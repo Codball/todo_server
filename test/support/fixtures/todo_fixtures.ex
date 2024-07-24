@@ -4,6 +4,8 @@ defmodule TodoServer.TodoFixtures do
   entities via the `TodoServer.Todo` context.
   """
 
+  alias TodoServer.Repo
+
   @doc """
   Generate a todo_list.
   """
@@ -16,6 +18,7 @@ defmodule TodoServer.TodoFixtures do
       |> TodoServer.Todo.create_todo_list()
 
     todo_list
+    |> Repo.preload(:todo_items)
   end
 
   @doc """

@@ -15,7 +15,7 @@ defmodule TodoServerWeb.TodoItemJSON do
     %{data: data(todo_item)}
   end
 
-  defp data(%TodoItem{} = todo_item) do
+  def data(%TodoItem{} = todo_item) do
     %{
       id: todo_item.id,
       name: todo_item.name,

@@ -1,5 +1,6 @@
 defmodule TodoServerWeb.TodoListJSON do
   alias TodoServer.Todo.TodoList
+  alias TodoServerWeb.TodoItemJSON
 
   @doc """
   Renders a list of todo_lists.
@@ -15,10 +16,19 @@ defmodule TodoServerWeb.TodoListJSON do
     %{data: data(todo_list)}
   end
 
+  defp data(%TodoList{todo_items: todo_items} = todo_list) when is_list(todo_items) do
+    %{
+      id: todo_list.id,
+      name: todo_list.name,
+      todo_items: for(todo_item <- todo_list.todo_items, do: TodoItemJSON.data(todo_item))
+    }
+  end
+
   defp data(%TodoList{} = todo_list) do
     %{
       id: todo_list.id,
-      name: todo_list.name
+      name: todo_list.name,
+      todo_items: []
     }
   end
 end

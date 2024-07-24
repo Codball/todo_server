@@ -88,7 +88,7 @@ defmodule TodoServer.TodoTest do
       assert todo_item.deleted_at == ~U[2024-07-24 20:41:00Z]
     end
 
-    test "create_todo_item/1 with invalid data returns error changeset", %{todo_list: todo_list} do
+    test "create_todo_item/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Todo.create_todo_item(@invalid_attrs)
     end
 

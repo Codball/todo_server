@@ -18,7 +18,12 @@ defmodule TodoServer.Todo do
 
   """
   def list_todo_lists do
-    Repo.all(TodoList)
+    from(tl in TodoList,
+      left_join: ti in assoc(tl, :todo_items),
+      as: :todo_items,
+      preload: [todo_items: ti]
+    )
+    |> Repo.all()
   end
 
   @doc """
@@ -35,7 +40,15 @@ defmodule TodoServer.Todo do
       ** (Ecto.NoResultsError)
 
   """
-  def get_todo_list!(id), do: Repo.get!(TodoList, id)
+  def get_todo_list!(id) do
+    from(tl in TodoList,
+      left_join: ti in assoc(tl, :todo_items),
+      as: :todo_items,
+      where: tl.id == ^id,
+      preload: [todo_items: ti]
+    )
+    |> Repo.one!()
+  end
 
   @doc """
   Creates a todo_list.
