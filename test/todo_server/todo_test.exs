@@ -62,57 +62,61 @@ defmodule TodoServer.TodoTest do
 
     import TodoServer.TodoFixtures
 
-    @invalid_attrs %{name: nil, description: nil, completed_at: nil, deleted_at: nil}
+    @invalid_attrs %{name: nil, description: nil, completed_at: nil, deleted_at: nil, todo_list_id: nil}
 
-    test "list_todo_items/0 returns all todo_items" do
-      todo_item = todo_item_fixture()
+    setup do
+      %{todo_list: todo_list_fixture()}
+    end
+
+    test "list_todo_items/0 returns all todo_items", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
       assert Todo.list_todo_items() == [todo_item]
     end
 
-    test "get_todo_item!/1 returns the todo_item with given id" do
-      todo_item = todo_item_fixture()
+    test "get_todo_item!/1 returns the todo_item with given id", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
       assert Todo.get_todo_item!(todo_item.id) == todo_item
     end
 
-    test "create_todo_item/1 with valid data creates a todo_item" do
-      valid_attrs = %{name: "some name", description: "some description", completed_at: ~N[2024-07-23 20:41:00], deleted_at: ~N[2024-07-23 20:41:00]}
+    test "create_todo_item/1 with valid data creates a todo_item", %{todo_list: todo_list} do
+      valid_attrs = %{name: "some name", description: "some description", completed_at: ~U[2024-07-24 20:41:00Z], deleted_at: ~U[2024-07-24 20:41:00Z], todo_list_id: todo_list.id}
 
       assert {:ok, %TodoItem{} = todo_item} = Todo.create_todo_item(valid_attrs)
       assert todo_item.name == "some name"
       assert todo_item.description == "some description"
-      assert todo_item.completed_at == ~N[2024-07-23 20:41:00]
-      assert todo_item.deleted_at == ~N[2024-07-23 20:41:00]
+      assert todo_item.completed_at == ~U[2024-07-24 20:41:00Z]
+      assert todo_item.deleted_at == ~U[2024-07-24 20:41:00Z]
     end
 
-    test "create_todo_item/1 with invalid data returns error changeset" do
+    test "create_todo_item/1 with invalid data returns error changeset", %{todo_list: todo_list} do
       assert {:error, %Ecto.Changeset{}} = Todo.create_todo_item(@invalid_attrs)
     end
 
-    test "update_todo_item/2 with valid data updates the todo_item" do
-      todo_item = todo_item_fixture()
-      update_attrs = %{name: "some updated name", description: "some updated description", completed_at: ~N[2024-07-24 20:41:00], deleted_at: ~N[2024-07-24 20:41:00]}
+    test "update_todo_item/2 with valid data updates the todo_item", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
+      update_attrs = %{name: "some updated name", description: "some updated description", completed_at: ~U[2024-07-24 20:41:00Z], deleted_at: ~U[2024-07-24 20:41:00Z]}
 
       assert {:ok, %TodoItem{} = todo_item} = Todo.update_todo_item(todo_item, update_attrs)
       assert todo_item.name == "some updated name"
       assert todo_item.description == "some updated description"
-      assert todo_item.completed_at == ~N[2024-07-24 20:41:00]
-      assert todo_item.deleted_at == ~N[2024-07-24 20:41:00]
+      assert todo_item.completed_at == ~U[2024-07-24 20:41:00Z]
+      assert todo_item.deleted_at == ~U[2024-07-24 20:41:00Z]
     end
 
-    test "update_todo_item/2 with invalid data returns error changeset" do
-      todo_item = todo_item_fixture()
+    test "update_todo_item/2 with invalid data returns error changeset", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
       assert {:error, %Ecto.Changeset{}} = Todo.update_todo_item(todo_item, @invalid_attrs)
       assert todo_item == Todo.get_todo_item!(todo_item.id)
     end
 
-    test "delete_todo_item/1 deletes the todo_item" do
-      todo_item = todo_item_fixture()
+    test "delete_todo_item/1 deletes the todo_item", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
       assert {:ok, %TodoItem{}} = Todo.delete_todo_item(todo_item)
       assert_raise Ecto.NoResultsError, fn -> Todo.get_todo_item!(todo_item.id) end
     end
 
-    test "change_todo_item/1 returns a todo_item changeset" do
-      todo_item = todo_item_fixture()
+    test "change_todo_item/1 returns a todo_item changeset", %{todo_list: todo_list} do
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
       assert %Ecto.Changeset{} = Todo.change_todo_item(todo_item)
     end
   end

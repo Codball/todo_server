@@ -28,7 +28,8 @@ defmodule TodoServer.TodoFixtures do
         completed_at: ~N[2024-07-23 20:41:00],
         deleted_at: ~N[2024-07-23 20:41:00],
         description: "some description",
-        name: "some name"
+        name: "some name",
+        todo_list_id: 1
       })
       |> TodoServer.Todo.create_todo_item()
 
