@@ -5,10 +5,6 @@ To start your Phoenix server:
   * Run `mix setup` to install and setup dependencies
   * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
 # Functionality
 
   * Create a todo list;
@@ -21,7 +17,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
       }
     }
 
-    Response (200):
+    Response (201):
     {
       data: {
         id: :integer,
@@ -41,7 +37,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
       }
     }
 
-    Response (200):
+    Response (201):
     {
       data: {
         id: :integer,
@@ -55,7 +51,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * View the items on the todo list;
     `GET localhost:4000/api/todo_lists/:id`
     ```
-    Response:
+    Response (200):
     {
       data: {
         id: :integer,
@@ -70,26 +66,74 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
       }
     }
     ```
+  * View all todo lists and their items;
+    `GET localhost:4000/api/todo_lists`
+    ```
+    Response (200):
+    {
+      data: [{
+        id: :integer,
+        name: :string,
+        todo_items: [{
+          id: :integer,
+          name: :string,
+          description: :string,
+          completed_at: :utc_timestamp || :null,
+          deleted_at: :utc_timestamp || :null,
+        }]
+      }]
+    }
+    ```
   * Mark an item as done;
     `PATCH localhost:4000/api/todo_items/:id`
     ```
     Body:
     {
       "todo_item": {
-        "completed_at": :utc_timestamp ("2024-07-25T00:00:00+00:00")
+        "completed_at": :utc_timestamp (ie "2024-07-25T00:00:00+00:00")
+      }
+    }
+
+    Response (200):
+    {
+      data: {
+        id: :integer,
+        name: :string,
+        description: :string,
+        completed_at: :utc_timestamp,
+        deleted_at: :utc_timestamp || :null,
       }
     }
     ```
   * Remove an item from the list;
-    Soft Delete:
+    * Soft Delete:
     `PATCH localhost:4000/api/todo_items/:id`
-    ```
-    Body:
-    {
-      "todo_item": {
-        "deleted_at": :utc_timestamp ("2024-07-25T00:00:00+00:00")
+      ```
+      Body:
+      {
+        "todo_item": {
+          "deleted_at": :utc_timestamp (ie "2024-07-25T00:00:00+00:00")
+        }
       }
-    }
-    ```
-    Hard delete:
+
+      Response (200):
+      {
+        data: {
+          id: :integer,
+          name: :string,
+          description: :string,
+          completed_at: :utc_timestamp || :null,
+          deleted_at: :utc_timestamp,
+        }
+      }
+      ```
+    * Hard delete:
     `DELETE localhost:4000/api/todo_items/:id`
+      ```
+      Response (204) No Content
+      ```
+    
+  * Possible Error Responses:
+    * 404 Not Found
+    * 422 Bad Data
+    * 500 Server Error
