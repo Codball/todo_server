@@ -18,9 +18,32 @@ defmodule TodoServerWeb.TodoListControllerTest do
   end
 
   describe "index" do
-    test "lists all todo_lists", %{conn: conn} do
+    setup do
+      todo_list = todo_list_fixture()
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
+
+      %{todo_list: todo_list, todo_item: todo_item}
+    end
+
+    test "lists all todo_lists", %{conn: conn, todo_list: todo_list} do
+      preloaded_todo_list = TodoServer.Todo.get_todo_list!(todo_list.id)
       conn = get(conn, ~p"/api/todo_lists")
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["data"] == [todo_list_to_json(preloaded_todo_list)]
+    end
+  end
+
+  describe "show" do
+    setup do
+      todo_list = todo_list_fixture()
+      todo_item = todo_item_fixture(%{todo_list_id: todo_list.id})
+
+      %{todo_list: todo_list, todo_item: todo_item}
+    end
+
+    test "lists todo_list with todo_items", %{conn: conn, todo_list: todo_list} do
+      preloaded_todo_list = TodoServer.Todo.get_todo_list!(todo_list.id)
+      conn = get(conn, ~p"/api/todo_lists/#{todo_list.id}")
+      assert json_response(conn, 200)["data"] == todo_list_to_json(preloaded_todo_list)
     end
   end
 
@@ -81,4 +104,26 @@ defmodule TodoServerWeb.TodoListControllerTest do
     todo_list = todo_list_fixture()
     %{todo_list: todo_list}
   end
+
+  defp todo_list_to_json(todo_list) do
+    todo_list
+    |> TodoServerWeb.TodoListJSON.data()
+    |> make_string_map()
+  end
+
+  def make_string_map(list) when is_list(list) do
+    for map <- list, into: [] do
+      make_string_map(map)
+    end
+  end
+
+  def make_string_map(%DateTime{} = datetime), do: DateTime.to_iso8601(datetime)
+
+  def make_string_map(map) when is_map(map) do
+    for {key, val} <- map, into: %{} do
+      {Atom.to_string(key), make_string_map(val)}
+    end
+  end
+
+  def make_string_map(primitive), do: primitive
 end

@@ -16,7 +16,7 @@ defmodule TodoServerWeb.TodoListJSON do
     %{data: data(todo_list)}
   end
 
-  defp data(%TodoList{todo_items: todo_items} = todo_list) when is_list(todo_items) do
+  def data(%TodoList{todo_items: todo_items} = todo_list) when is_list(todo_items) do
     %{
       id: todo_list.id,
       name: todo_list.name,
@@ -24,7 +24,7 @@ defmodule TodoServerWeb.TodoListJSON do
     }
   end
 
-  defp data(%TodoList{} = todo_list) do
+  def data(%TodoList{} = todo_list) do
     %{
       id: todo_list.id,
       name: todo_list.name,
